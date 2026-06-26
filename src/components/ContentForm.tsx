@@ -61,7 +61,8 @@ export const ContentForm: React.FC<ContentFormProps> = ({
         topic: topic.trim(),
         contentType,
         tone,
-        imageStyle
+        imageStyle,
+        mode: 'generate'
       });
     }
   };

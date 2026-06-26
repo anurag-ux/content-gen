@@ -8,7 +8,7 @@ export interface GenerateRequest {
   contentType: ContentType;
   tone: ToneType;
   imageStyle: ImageStyleType;
-  mode?: 'regenerate';
+  mode: 'generate' | 'regenerate';
   existingContent?: string;
 }
 
