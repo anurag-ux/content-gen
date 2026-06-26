@@ -33,6 +33,46 @@ export const GeneratedContent: React.FC<GeneratedContentProps> = ({
   // Calculate word count
   const wordCount = text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
 
+  const handleDownloadMarkdown = () => {
+    if (!text) return;
+    const blob = new Blob([text], { type: 'text/markdown;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const safeTopic = (topic || 'generated-content')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    link.setAttribute('download', `${safeTopic}.md`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadImage = async () => {
+    if (!imageUrl) return;
+    try {
+      const response = await fetch(imageUrl, { mode: 'cors' });
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const safeTopic = (topic || 'banner')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      link.setAttribute('download', `${safeTopic}-banner.jpg`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download image via fetch, falling back to open in new tab', error);
+      window.open(imageUrl, '_blank');
+    }
+  };
+
   return (
     <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fadeIn">
       {/* Left Column: Main Article Content Container */}
@@ -95,6 +135,28 @@ export const GeneratedContent: React.FC<GeneratedContentProps> = ({
             )}
           </button>
           
+          <button
+            onClick={handleDownloadMarkdown}
+            className="w-full flex items-center justify-center space-x-2 py-2.5 border border-neutral-250 bg-white hover:bg-neutral-50 active:bg-neutral-100 text-neutral-700 rounded-lg text-xs font-semibold transition cursor-pointer shadow-xs"
+          >
+            <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Download Markdown</span>
+          </button>
+
+          {imageUrl && (
+            <button
+              onClick={handleDownloadImage}
+              className="w-full flex items-center justify-center space-x-2 py-2.5 border border-neutral-250 bg-white hover:bg-neutral-50 active:bg-neutral-100 text-neutral-700 rounded-lg text-xs font-semibold transition cursor-pointer shadow-xs"
+            >
+              <svg className="w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Download Banner Image</span>
+            </button>
+          )}
+
           <button
             onClick={onRefineClick}
             className="w-full flex items-center justify-center space-x-2 py-2.5 border border-neutral-250 bg-white hover:bg-neutral-50 active:bg-neutral-100 text-neutral-700 rounded-lg text-xs font-semibold transition cursor-pointer shadow-xs"
