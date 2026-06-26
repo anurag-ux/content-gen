@@ -181,10 +181,13 @@ function App() {
       const endTime = performance.now();
       
       setGenerationTime(endTime - startTime);
-      setResult({
-        text: response.text,
-        imageUrl: result.imageUrl,
-        metrics: response.metrics
+      setResult(prev => {
+        if (!prev) return null;
+        return {
+          text: response.text,
+          imageUrl: prev.imageUrl,
+          metrics: response.metrics
+        };
       });
       setLastPayload(refinePayload);
       
