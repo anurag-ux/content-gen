@@ -1,6 +1,6 @@
 import type { GenerateRequest, GenerateResponse } from '../types/api';
 
-const API_ENDPOINT = 'https://proserv-tool.app.n8n.cloud/webhook-test/content-generator';
+const API_ENDPOINT = 'https://proserv-tool.app.n8n.cloud/webhook/content-generator';
 
 export async function generateContent(data: GenerateRequest): Promise<GenerateResponse> {
   const response = await fetch(API_ENDPOINT, {

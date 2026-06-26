@@ -732,15 +732,15 @@ function App() {
         )}
       </main>
 
-      {/* Refine Article Modal */}
+      {/* Regenerate Article Modal */}
       {isRefineModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fadeIn">
           <div className="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-xl space-y-6 relative animate-scaleUp text-left">
             {/* Header */}
             <div className="flex justify-between items-start">
               <div className="space-y-1">
-                <h3 className="text-xl font-bold text-neutral-900">Refine Article</h3>
-                <p className="text-xs text-neutral-500">Update content type or tone to regenerate the text.</p>
+                <h3 className="text-xl font-bold text-neutral-900">Regenerate Article</h3>
+                <p className="text-xs text-neutral-500">Select content type or tone to regenerate the text.</p>
               </div>
               <button 
                 onClick={() => setIsRefineModalOpen(false)}
@@ -753,39 +753,52 @@ function App() {
             </div>
 
             {/* Inputs */}
-            <div className="space-y-4">
-              {/* Content Type Selector */}
-              <div className="space-y-1.5 text-left">
-                <label className="text-xs font-bold text-neutral-800 uppercase tracking-wider block">Content Type</label>
-                <div className="relative">
-                  <select
-                    value={refineContentType}
-                    onChange={(e) => setRefineContentType(e.target.value as ContentType)}
-                    className="w-full bg-white border border-neutral-200 rounded-lg px-3 py-2 text-sm text-neutral-800 shadow-2xs focus:border-black focus:outline-hidden cursor-pointer appearance-none pr-8 font-sans font-medium"
-                  >
-                    <option value="Article">Article</option>
-                    <option value="Guide">Guide</option>
-                    <option value="Opinion">Opinion</option>
-                    <option value="Trend Analysis">Trend Analysis</option>
-                  </select>
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-xs">▼</span>
+            <div className="space-y-5">
+              {/* Content Type */}
+              <div className="space-y-2 text-left">
+                <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Content Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(['Article', 'Guide', 'Opinion', 'Trend Analysis'] as ContentType[]).map((type) => {
+                    const isSelected = refineContentType === type;
+                    return (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setRefineContentType(type)}
+                        className={`flex items-center justify-center p-3.5 rounded-xl border text-xs font-semibold transition cursor-pointer select-none shadow-2xs ${
+                          isSelected
+                            ? 'border-black bg-neutral-950 text-white shadow-xs'
+                            : 'border-neutral-200 hover:border-neutral-300 bg-white text-neutral-600'
+                        }`}
+                      >
+                        {type}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Tone Selector */}
-              <div className="space-y-1.5 text-left">
-                <label className="text-xs font-bold text-neutral-800 uppercase tracking-wider block">Tone</label>
-                <div className="relative">
-                  <select
-                    value={refineTone}
-                    onChange={(e) => setRefineTone(e.target.value as ToneType)}
-                    className="w-full bg-white border border-neutral-200 rounded-lg px-3 py-2 text-sm text-neutral-800 shadow-2xs focus:border-black focus:outline-hidden cursor-pointer appearance-none pr-8 font-sans font-medium"
-                  >
-                    <option value="Professional">Professional</option>
-                    <option value="Casual">Casual</option>
-                    <option value="Inspirational">Inspirational</option>
-                  </select>
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-xs">▼</span>
+              {/* Tone */}
+              <div className="space-y-2 text-left">
+                <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Tone</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['Professional', 'Casual', 'Inspirational'] as ToneType[]).map((t) => {
+                    const isSelected = refineTone === t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setRefineTone(t)}
+                        className={`flex items-center justify-center p-3.5 rounded-xl border text-xs font-semibold transition cursor-pointer select-none shadow-2xs ${
+                          isSelected
+                            ? 'border-black bg-neutral-950 text-white shadow-xs'
+                            : 'border-neutral-200 hover:border-neutral-300 bg-white text-neutral-600'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -793,7 +806,7 @@ function App() {
             {/* Actions */}
             <button
               onClick={handleRefineSubmit}
-              className="w-full flex items-center justify-center space-x-2 py-2.5 bg-black text-white hover:bg-neutral-800 active:bg-neutral-900 rounded-lg text-sm font-semibold transition cursor-pointer shadow-sm"
+              className="w-full flex items-center justify-center space-x-2 py-2.5 bg-black text-white hover:bg-neutral-850 active:bg-neutral-900 rounded-lg text-sm font-semibold transition cursor-pointer shadow-sm"
             >
               <span>Regenerate</span>
             </button>
