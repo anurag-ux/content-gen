@@ -142,7 +142,8 @@ function App() {
       text: result.text,
       imageUrl: result.imageUrl,
       savedAt: new Date().toLocaleString(),
-      generationTime: generationTime ?? undefined
+      generationTime: generationTime ?? undefined,
+      metrics: result.metrics
     };
 
     const updated = [newArticle, ...savedArticles];
@@ -610,6 +611,38 @@ function App() {
                                 {activeSavedArticle.text ? activeSavedArticle.text.trim().split(/\s+/).filter(Boolean).length : 0} words
                               </span>
                             </div>
+                            {activeSavedArticle.metrics && (
+                              <>
+                                <div className="flex justify-between items-center border-t border-neutral-150 pt-2.5">
+                                  <span className="flex items-center gap-1.5 text-neutral-450">
+                                    <span>🪙</span> Tokens
+                                  </span>
+                                  <span className="font-semibold text-neutral-900">
+                                    {activeSavedArticle.metrics.totalTokens.toLocaleString()} <span className="text-[10px] text-neutral-400 font-normal">({activeSavedArticle.metrics.promptTokens} in / {activeSavedArticle.metrics.outputTokens} out)</span>
+                                  </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center gap-1.5 text-neutral-450">
+                                    <span>✍️</span> Text Cost
+                                  </span>
+                                  <span className="font-semibold text-neutral-900">₹{activeSavedArticle.metrics.textCostINR.toFixed(2)}</span>
+                                </div>
+                                {activeSavedArticle.metrics.imageCostINR > 0 && (
+                                  <div className="flex justify-between items-center">
+                                    <span className="flex items-center gap-1.5 text-neutral-450">
+                                      <span>🖼️</span> Image Cost
+                                    </span>
+                                    <span className="font-semibold text-neutral-900">₹{activeSavedArticle.metrics.imageCostINR.toFixed(2)}</span>
+                                  </div>
+                                )}
+                                <div className="flex justify-between items-center border-t border-neutral-150 pt-2.5">
+                                  <span className="flex items-center gap-1.5 text-neutral-450 font-semibold">
+                                    <span>💰</span> Total Cost
+                                  </span>
+                                  <span className="font-bold text-green-600">₹{activeSavedArticle.metrics.totalCostINR.toFixed(2)}</span>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>

@@ -133,6 +133,38 @@ export const GeneratedContent: React.FC<GeneratedContentProps> = ({
               </span>
               <span className="font-bold text-neutral-900">{wordCount} words</span>
             </div>
+            {data.metrics && (
+              <>
+                <div className="flex justify-between items-center border-t border-neutral-150 pt-3">
+                  <span className="flex items-center gap-2 text-neutral-450">
+                    <span>🪙</span> Tokens
+                  </span>
+                  <span className="font-semibold text-neutral-900">
+                    {data.metrics.totalTokens.toLocaleString()} <span className="text-[10px] text-neutral-400 font-normal">({data.metrics.promptTokens} in / {data.metrics.outputTokens} out)</span>
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="flex items-center gap-2 text-neutral-450">
+                    <span>✍️</span> Text Cost
+                  </span>
+                  <span className="font-semibold text-neutral-900">₹{data.metrics.textCostINR.toFixed(2)}</span>
+                </div>
+                {data.metrics.imageCostINR > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2 text-neutral-450">
+                      <span>🖼️</span> Image Cost
+                    </span>
+                    <span className="font-semibold text-neutral-900">₹{data.metrics.imageCostINR.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center border-t border-neutral-150 pt-2.5">
+                  <span className="flex items-center gap-2 text-neutral-450 font-semibold">
+                    <span>💰</span> Total Cost
+                  </span>
+                  <span className="font-bold text-green-600">₹{data.metrics.totalCostINR.toFixed(2)}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

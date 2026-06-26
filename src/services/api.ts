@@ -15,5 +15,6 @@ export async function generateContent(data: GenerateRequest): Promise<GenerateRe
     throw new Error(`Failed to generate content: ${response.statusText}`);
   }
 
-  return response.json();
+  const resData = await response.json();
+  return resData.json ? resData.json : resData;
 }

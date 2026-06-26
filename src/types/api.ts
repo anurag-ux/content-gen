@@ -10,9 +10,19 @@ export interface GenerateRequest {
   imageStyle: ImageStyleType;
 }
 
+export interface GenerationMetrics {
+  promptTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  textCostINR: number;
+  imageCostINR: number;
+  totalCostINR: number;
+}
+
 export interface GenerateResponse {
   text: string;
   imageUrl?: string;
+  metrics?: GenerationMetrics;
 }
 
 export interface SavedArticle {
@@ -25,4 +35,5 @@ export interface SavedArticle {
   imageUrl?: string;
   savedAt: string;
   generationTime?: number;
+  metrics?: GenerationMetrics;
 }
