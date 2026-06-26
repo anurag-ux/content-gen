@@ -70,6 +70,11 @@ function App() {
   const [tone, setTone] = useState<ToneType>('Professional');
   const [imageStyle, setImageStyle] = useState<ImageStyleType>('Photographic');
 
+  // Refine Modal state
+  const [isRefineModalOpen, setIsRefineModalOpen] = useState(false);
+  const [refineContentType, setRefineContentType] = useState<ContentType>('Article');
+  const [refineTone, setRefineTone] = useState<ToneType>('Professional');
+
   // Saved articles state
   const [savedArticles, setSavedArticles] = useState<SavedArticle[]>([]);
   const [selectedSavedId, setSelectedSavedId] = useState<string | null>(null);
@@ -144,6 +149,51 @@ function App() {
   const handleRetry = () => {
     if (lastPayload) {
       handleGenerate(lastPayload);
+    }
+  };
+
+  const openRefineModal = () => {
+    if (lastPayload) {
+      setRefineContentType(lastPayload.contentType);
+      setRefineTone(lastPayload.tone);
+    }
+    setIsRefineModalOpen(true);
+  };
+
+  const handleRefineSubmit = async () => {
+    if (!lastPayload || !result) return;
+    setIsRefineModalOpen(false);
+    setIsLoading(true);
+    setError(null);
+    setGenerationTime(null);
+
+    const startTime = performance.now();
+    try {
+      const refinePayload: GenerateRequest = {
+        ...lastPayload,
+        contentType: refineContentType,
+        tone: refineTone,
+        mode: 'regenerate',
+        existingContent: result.text
+      };
+
+      const response = await generateContent(refinePayload);
+      const endTime = performance.now();
+      
+      setGenerationTime(endTime - startTime);
+      setResult({
+        text: response.text,
+        imageUrl: result.imageUrl,
+        metrics: response.metrics
+      });
+      setLastPayload(refinePayload);
+      
+      setContentType(refineContentType);
+      setTone(refineTone);
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred while refining content.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -485,6 +535,7 @@ function App() {
                   generationTime={generationTime}
                   onSave={handleSaveArticle}
                   isSaved={isCurrentArticleSaved()}
+                  onRefineClick={openRefineModal}
                 />
               </div>
             )}
@@ -677,6 +728,75 @@ function App() {
           </div>
         )}
       </main>
+
+      {/* Refine Article Modal */}
+      {isRefineModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white border border-neutral-200 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-xl space-y-6 relative animate-scaleUp text-left">
+            {/* Header */}
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-neutral-900">Refine Article</h3>
+                <p className="text-xs text-neutral-500">Update content type or tone to regenerate the text.</p>
+              </div>
+              <button 
+                onClick={() => setIsRefineModalOpen(false)}
+                className="text-neutral-450 hover:text-neutral-700 transition cursor-pointer p-1"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Inputs */}
+            <div className="space-y-4">
+              {/* Content Type Selector */}
+              <div className="space-y-1.5 text-left">
+                <label className="text-xs font-bold text-neutral-800 uppercase tracking-wider block">Content Type</label>
+                <div className="relative">
+                  <select
+                    value={refineContentType}
+                    onChange={(e) => setRefineContentType(e.target.value as ContentType)}
+                    className="w-full bg-white border border-neutral-200 rounded-lg px-3 py-2 text-sm text-neutral-800 shadow-2xs focus:border-black focus:outline-hidden cursor-pointer appearance-none pr-8 font-sans font-medium"
+                  >
+                    <option value="Article">Article</option>
+                    <option value="Guide">Guide</option>
+                    <option value="Opinion">Opinion</option>
+                    <option value="Trend Analysis">Trend Analysis</option>
+                  </select>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-xs">▼</span>
+                </div>
+              </div>
+
+              {/* Tone Selector */}
+              <div className="space-y-1.5 text-left">
+                <label className="text-xs font-bold text-neutral-800 uppercase tracking-wider block">Tone</label>
+                <div className="relative">
+                  <select
+                    value={refineTone}
+                    onChange={(e) => setRefineTone(e.target.value as ToneType)}
+                    className="w-full bg-white border border-neutral-200 rounded-lg px-3 py-2 text-sm text-neutral-800 shadow-2xs focus:border-black focus:outline-hidden cursor-pointer appearance-none pr-8 font-sans font-medium"
+                  >
+                    <option value="Professional">Professional</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Inspirational">Inspirational</option>
+                  </select>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-xs">▼</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <button
+              onClick={handleRefineSubmit}
+              className="w-full flex items-center justify-center space-x-2 py-2.5 bg-black text-white hover:bg-neutral-800 active:bg-neutral-900 rounded-lg text-sm font-semibold transition cursor-pointer shadow-sm"
+            >
+              <span>Regenerate</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="mt-8 text-center text-xs text-neutral-400">

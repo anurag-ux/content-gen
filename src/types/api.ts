@@ -8,6 +8,8 @@ export interface GenerateRequest {
   contentType: ContentType;
   tone: ToneType;
   imageStyle: ImageStyleType;
+  mode?: 'regenerate';
+  existingContent?: string;
 }
 
 export interface GenerationMetrics {
