@@ -48,6 +48,13 @@ const FORMAT_EXAMPLES: Record<ContentType, { description: string; examples: stri
   }
 };
 
+const generateUUID = () => {
+  if (typeof window !== 'undefined' && window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+  return Math.random().toString(36).substring(2, 15) + '_' + Date.now().toString(36);
+};
+
 function App() {
   // Navigation Tabs state
   const [activeTab, setActiveTab] = useState<'generator' | 'saved'>('generator');
@@ -103,6 +110,17 @@ function App() {
     }
   }, [isLoading, activeTab]);
 
+  // Keep selectedSavedId in sync with savedArticles list
+  useEffect(() => {
+    if (savedArticles.length > 0) {
+      if (!selectedSavedId || !savedArticles.some(a => a.id === selectedSavedId)) {
+        setSelectedSavedId(savedArticles[0].id);
+      }
+    } else {
+      setSelectedSavedId(null);
+    }
+  }, [savedArticles, selectedSavedId]);
+
   const handleGenerate = async (payload: GenerateRequest) => {
     setIsLoading(true);
     setError(null);
@@ -134,7 +152,7 @@ function App() {
     if (!result || !lastPayload) return;
 
     const newArticle: SavedArticle = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       topic: lastPayload.topic,
       contentType: lastPayload.contentType,
       tone: lastPayload.tone,
